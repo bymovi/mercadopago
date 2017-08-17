@@ -28,10 +28,10 @@ Encuentra la clave `aliases` en `app/config/app.php` y agrega el siguiente códi
 Luego ejecutar el siguiente comando para migrar el archivo de configuración
 
 ```sh
-php artisan config:publish aws/aws-sdk-php-laravel
+php artisan config:publish bymovi/mercadopago
 ```
 
-Completar el `array` con las credenciales de MercadoPago
+Completar el `array` que se encuentra en `app/config/packages/bymovi/mercadopago/mercadopago.php` con las credenciales de MercadoPago
 
 ```php
     return array(
