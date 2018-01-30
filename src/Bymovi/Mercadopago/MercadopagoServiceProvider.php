@@ -1,7 +1,12 @@
 <?php namespace Bymovi\Mercadopago;
 
+use Empresa;
 use Illuminate\Support\ServiceProvider;
 use Config;
+use function json_encode;
+use Log;
+use Session;
+use function session_get_cookie_params;
 
 class MercadopagoServiceProvider extends ServiceProvider {
 
@@ -41,18 +46,25 @@ class MercadopagoServiceProvider extends ServiceProvider {
         $config = $loader->load($env, 'mercadopago', 'mercadopago');
         $this->app['config']->set('mercadopago::mercadopago', $config);
 
-        $this->app['mercadopago'] = $this->app->share(function ($app){
-            $client_id = Config::get('mercadopago::mercadopago.MERCADOPAGO_CLIENT_ID');
-            $secret_id = Config::get('mercadopago::mercadopago.MERCADOPAGO_CLIENT_SECRET');
+        $this->app->bind('mercadopago', function($app)
+        {
+            $id_empresa = Session::get('id_empresa');
+            $subdominio = Empresa::getSubdominioById($id_empresa);
+
+            switch ($subdominio)
+            {
+                case 'boreal':
+                    $client_id = Config::get('mercadopago::mercadopago.MERCADOPAGO_CLIENT_ID_BOREAL');
+                    $secret_id = Config::get('mercadopago::mercadopago.MERCADOPAGO_CLIENT_SECRET_BOREAL');
+                    break;
+                default:
+                    $client_id = Config::get('mercadopago::mercadopago.MERCADOPAGO_CLIENT_ID');
+                    $secret_id = Config::get('mercadopago::mercadopago.MERCADOPAGO_CLIENT_SECRET');
+                    break;
+            }
 
             return new Mercadopago($client_id, $secret_id);
         });
-
-//        $this->app->booting(function()
-//        {
-//            $loader = \Illuminate\Foundation\AliasLoader::getInstance();
-//            $loader->alias('Mercadopago', 'Bymovi\Mercadopago\Facades\Mercadopago');
-//        });
     }
 
     /**
