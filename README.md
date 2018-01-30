@@ -5,7 +5,7 @@
 Correr el siguiente comando
 
 ```sh
-composer require bymovi/mercadopago=dev-master
+composer require bymovi/mercadopago
 ```
 Buscar la clave `providers` en `app/config/app.php` y registrar el Service Provider
 
