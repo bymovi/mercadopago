@@ -3,10 +3,8 @@
 use Empresa;
 use Illuminate\Support\ServiceProvider;
 use Config;
-use function json_encode;
 use Log;
 use Session;
-use function session_get_cookie_params;
 
 class MercadopagoServiceProvider extends ServiceProvider {
 
