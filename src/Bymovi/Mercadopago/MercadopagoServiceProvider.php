@@ -51,13 +51,13 @@ class MercadopagoServiceProvider extends ServiceProvider {
 
             switch ($subdominio)
             {
-                case 'boreal':
-                    $client_id = Config::get('mercadopago::mercadopago.MERCADOPAGO_CLIENT_ID_BOREAL');
-                    $secret_id = Config::get('mercadopago::mercadopago.MERCADOPAGO_CLIENT_SECRET_BOREAL');
-                    break;
                 case 'amoemra':
                     $client_id = Config::get('mercadopago::mercadopago.MERCADOPAGO_CLIENT_ID_AMOEMRA');
                     $secret_id = Config::get('mercadopago::mercadopago.MERCADOPAGO_CLIENT_SECRET_AMOEMRA');
+                    break;
+                case 'boreal':
+                    $client_id = Config::get('mercadopago::mercadopago.MERCADOPAGO_CLIENT_ID_BOREAL');
+                    $secret_id = Config::get('mercadopago::mercadopago.MERCADOPAGO_CLIENT_SECRET_BOREAL');
                     break;
                 default:
                     $client_id = Config::get('mercadopago::mercadopago.MERCADOPAGO_CLIENT_ID');
