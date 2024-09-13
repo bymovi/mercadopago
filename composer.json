@@ -3,7 +3,7 @@
     "description": "Paquete para integrar mercado pago a laravel 4.*",
     "license":"MIT",
     "minimum-stability": "stable",
-    "version": "1.0.12",
+    "version": "1.0.13",
     "authors": [
         {
             "name": "Jose Rodrigo Diaz",

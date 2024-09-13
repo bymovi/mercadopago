@@ -49,6 +49,8 @@ class MPRestClient {
             array_push($headers, "content-type: application/json");
         }
 
+        array_push($headers, "x-product-id: BC32A7VTRPP001U8NHK0");
+
         // Build $connect
         $connect = curl_init();
 
@@ -114,7 +116,7 @@ class MPRestClient {
                 if (isset ($response['response']['cause']['code']) && isset ($response['response']['cause']['description'])) {
                     $message .= " - ".$response['response']['cause']['code'].': '.$response['response']['cause']['description'];
                 } else if (is_array ($response['response']['cause'])) {
-                    foreach ($response['cause'] as $causes) {
+                    foreach ($response['response']['cause'] as $causes) {
                         if(is_array($causes)) {
                             foreach ($causes as $cause) {
                                 $message .= " - ".$cause['code'].': '.$cause['description'];

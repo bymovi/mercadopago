@@ -10,8 +10,7 @@
 $GLOBALS["LIB_LOCATION"] = dirname(__FILE__);
 
 class Mercadopago {
-
-    const version = "0.5.2";
+    const version = "0.5.3";
 
     private $client_id;
     private $client_secret;
@@ -20,7 +19,7 @@ class Mercadopago {
     private $sandbox = FALSE;
 
     function __construct() {
-        $i = func_num_args(); 
+        $i = func_num_args();
 
         if ($i > 2 || $i < 1) {
             throw new MercadoPagoException("Invalid arguments. Use CLIENT_ID and CLIENT SECRET, or ACCESS_TOKEN");
@@ -82,9 +81,9 @@ class Mercadopago {
      */
     public function get_payment($id) {
         $uri_prefix = $this->sandbox ? "/sandbox" : "";
-            
+
         $request = array(
-            "uri" => $uri_prefix."/collections/notifications/{$id}",
+            "uri" => "/v1/payments/{$id}",
             "params" => array(
                 "access_token" => $this->get_access_token()
             )
@@ -101,7 +100,7 @@ class Mercadopago {
      * Get information for specific authorized payment
      * @param id
      * @return array(json)
-    */    
+     */
     public function get_authorized_payment($id) {
         $request = array(
             "uri" => "/authorized_payments/{$id}",
@@ -121,16 +120,15 @@ class Mercadopago {
      */
     public function refund_payment($id) {
         $request = array(
-            "uri" => "/collections/{$id}",
+            "uri" => "/v1/payments/{$id}/refunds",
             "params" => array(
                 "access_token" => $this->get_access_token()
             ),
             "data" => array(
-                "status" => "refunded"
             )
         );
 
-        $response = MPRestClient::put($request);
+        $response = MPRestClient::post($request);
         return $response;
     }
 
@@ -141,7 +139,7 @@ class Mercadopago {
      */
     public function cancel_payment($id) {
         $request = array(
-            "uri" => "/collections/{$id}",
+            "uri" => "/v1/payments/{$id}",
             "params" => array(
                 "access_token" => $this->get_access_token()
             ),
@@ -186,9 +184,9 @@ class Mercadopago {
         $filters["limit"] = $limit;
 
         $uri_prefix = $this->sandbox ? "/sandbox" : "";
-            
+
         $request = array(
-            "uri" => $uri_prefix."/collections/search",
+            "uri" => "/v1/payments/search",
             "params" => array_merge ($filters, array(
                 "access_token" => $this->get_access_token()
             ))
@@ -291,8 +289,8 @@ class Mercadopago {
      * Update a preapproval payment
      * @param string $preapproval_payment, $id
      * @return array(json)
-     */ 
-    
+     */
+
     public function update_preapproval_payment($id, $preapproval_payment) {
         $request = array(
             "uri" => "/preapproval/{$id}",
@@ -309,11 +307,11 @@ class Mercadopago {
     /* Generic resource call methods */
 
     /**
-    * Generic resource get
-    * @param request
-    * @param params (deprecated)
-    * @param authenticate = true (deprecated)
-    */
+     * Generic resource get
+     * @param request
+     * @param params (deprecated)
+     * @param authenticate = true (deprecated)
+     */
     public function get($request, $params = null, $authenticate = true) {
         if (is_string ($request)) {
             $request = array(
@@ -334,11 +332,11 @@ class Mercadopago {
     }
 
     /**
-    * Generic resource post
-    * @param request
-    * @param data (deprecated)
-    * @param params (deprecated)
-    */
+     * Generic resource post
+     * @param request
+     * @param data (deprecated)
+     * @param params (deprecated)
+     */
     public function post($request, $data = null, $params = null) {
         if (is_string ($request)) {
             $request = array(
@@ -359,11 +357,11 @@ class Mercadopago {
     }
 
     /**
-    * Generic resource put
-    * @param request
-    * @param data (deprecated)
-    * @param params (deprecated)
-    */
+     * Generic resource put
+     * @param request
+     * @param data (deprecated)
+     * @param params (deprecated)
+     */
     public function put($request, $data = null, $params = null) {
         if (is_string ($request)) {
             $request = array(
@@ -384,11 +382,11 @@ class Mercadopago {
     }
 
     /**
-    * Generic resource delete
-    * @param request
-    * @param data (deprecated)
-    * @param params (deprecated)
-    */
+     * Generic resource delete
+     * @param request
+     * @param data (deprecated)
+     * @param params (deprecated)
+     */
     public function delete($request, $params = null) {
         if (is_string ($request)) {
             $request = array(
@@ -410,10 +408,3 @@ class Mercadopago {
     /* **************************************************************************************** */
 
 }
-
-/**
- * MercadoPago cURL RestClient
- */
-
-
-
