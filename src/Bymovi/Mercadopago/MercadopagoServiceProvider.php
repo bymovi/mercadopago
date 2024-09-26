@@ -1,12 +1,13 @@
 <?php namespace Bymovi\Mercadopago;
 
+use Config;
 use Empresa;
 use Illuminate\Support\ServiceProvider;
-use Config;
 use Log;
 use Session;
 
-class MercadopagoServiceProvider extends ServiceProvider {
+class MercadopagoServiceProvider extends ServiceProvider
+{
 
     /**
      * Indicates if loading of the provider is deferred.
@@ -33,47 +34,38 @@ class MercadopagoServiceProvider extends ServiceProvider {
     public function register()
     {
         $loader = $this->app['config']->getLoader();
+
         // Get environment name
         $env = $this->app['config']->getEnvironment();
+
         // Add package namespace with path set, override package if app config exists in the main app directory
-        if (file_exists(app_path() . '/config/packages/bymovi/mercadopago')) {
+        if (file_exists(app_path() . '/config/packages/bymovi/mercadopago'))
+        {
             $loader->addNamespace('mercadopago', app_path() . '/config/packages/bymovi/mercadopago');
-        } else {
+        }
+        else
+        {
             $loader->addNamespace('mercadopago', __DIR__ . '/../../config');
         }
+
         $config = $loader->load($env, 'mercadopago', 'mercadopago');
         $this->app['config']->set('mercadopago::mercadopago', $config);
 
-        $this->app->bind('mercadopago', function($app)
-        {
-            $id_empresa = Session::get('id_empresa');
-            $subdominio = Empresa::getSubdominioById($id_empresa);
-
-            switch ($subdominio)
+        $this->app->bind('mercadopago', function($app, $subdominio) {
+            if (!is_string($subdominio))
             {
-                case 'amoemra':
-                    $client_id = Config::get('mercadopago::mercadopago.MERCADOPAGO_CLIENT_ID_AMOEMRA');
-                    $secret_id = Config::get('mercadopago::mercadopago.MERCADOPAGO_CLIENT_SECRET_AMOEMRA');
-                    break;
-                case 'baires':
-                    $client_id = Config::get('mercadopago::mercadopago.MERCADOPAGO_CLIENT_ID_BAIRES');
-                    $secret_id = Config::get('mercadopago::mercadopago.MERCADOPAGO_CLIENT_SECRET_BAIRES');
-                    break;
-                case 'boreal':
-                    $client_id = Config::get('mercadopago::mercadopago.MERCADOPAGO_CLIENT_ID_BOREAL');
-                    $secret_id = Config::get('mercadopago::mercadopago.MERCADOPAGO_CLIENT_SECRET_BOREAL');
-                    break;
-                case 'bayres':
-                    $client_id = Config::get('mercadopago::mercadopago.MERCADOPAGO_CLIENT_ID_BAYRES');
-                    $secret_id = Config::get('mercadopago::mercadopago.MERCADOPAGO_CLIENT_SECRET_BAYRES');
-                    break;
-                default:
-                    $client_id = Config::get('mercadopago::mercadopago.MERCADOPAGO_CLIENT_ID');
-                    $secret_id = Config::get('mercadopago::mercadopago.MERCADOPAGO_CLIENT_SECRET');
-                    break;
+                throw new MercadopagoException('Subdominio debe ser string');
             }
 
-            return new Mercadopago($client_id, $secret_id);
+            $client_id     = Config::get("mercadopago::mercadopago.$subdominio.client_id");
+            $client_secret = Config::get("mercadopago::mercadopago.$subdominio.client_secret");
+
+            if (is_null($client_id) || is_null($client_secret))
+            {
+                throw new MercadopagoException('Mercadopago client_id o client_secret incorrectos o mal configurados');
+            }
+
+            return new Mercadopago($client_id, $client_secret);
         });
     }
 
@@ -84,7 +76,7 @@ class MercadopagoServiceProvider extends ServiceProvider {
      */
     public function provides()
     {
-        return array();
+        return [];
     }
 
 }

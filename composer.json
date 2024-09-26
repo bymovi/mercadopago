@@ -1,9 +1,9 @@
 {
     "name": "bymovi/mercadopago",
-    "description": "Paquete para integrar mercado pago a laravel 4.*",
+    "description": "Paquete para integrar mercado pago a laravel 4.2",
     "license":"MIT",
     "minimum-stability": "stable",
-    "version": "1.0.13",
+    "version": "1.0.14",
     "authors": [
         {
             "name": "Jose Rodrigo Diaz",
@@ -11,8 +11,8 @@
         }
     ],
     "require": {
-        "php": ">=5.3.0",
-        "illuminate/support": "~4.1"
+        "php": "5.6.*",
+        "illuminate/support": "~4.2"
     },
     "autoload": {
         "classmap": [
