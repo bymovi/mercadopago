@@ -1,4 +1,6 @@
-<?php namespace Bymovi\Mercadopago;
+<?php
+
+namespace Bymovi\Mercadopago;
 
 use Config;
 use Empresa;

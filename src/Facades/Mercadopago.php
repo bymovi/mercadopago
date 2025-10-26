@@ -1,4 +1,6 @@
-<?php namespace Bymovi\Mercadopago\Facades;
+<?php
+
+namespace Bymovi\Mercadopago\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
