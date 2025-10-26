@@ -7,7 +7,14 @@
  * @author hcasatti
  *
  */
-$GLOBALS["LIB_LOCATION"] = dirname(__FILE__);
+// PSR-4 base is src/. Prefer src/cacert.pem, fallback to legacy nested path if not moved yet.
+$GLOBALS["LIB_LOCATION"] = __DIR__;
+if (!file_exists($GLOBALS["LIB_LOCATION"]."/cacert.pem")) {
+    $legacy = __DIR__ . DIRECTORY_SEPARATOR . 'Bymovi' . DIRECTORY_SEPARATOR . 'Mercadopago';
+    if (file_exists($legacy . DIRECTORY_SEPARATOR . 'cacert.pem')) {
+        $GLOBALS["LIB_LOCATION"] = $legacy;
+    }
+}
 
 class Mercadopago {
     const version = "0.5.3";
@@ -109,13 +116,13 @@ class Mercadopago {
             )
         );
 
-        $authorized_payment_info = MPRestClient::get($request);
-        return $authorized_payment_info;
+        $result = MPRestClient::get($request);
+        return $result;
     }
 
     /**
      * Refund accredited payment
-     * @param int $id
+     * @param id
      * @return array(json)
      */
     public function refund_payment($id) {
@@ -123,18 +130,16 @@ class Mercadopago {
             "uri" => "/v1/payments/{$id}/refunds",
             "params" => array(
                 "access_token" => $this->get_access_token()
-            ),
-            "data" => array(
             )
         );
 
-        $response = MPRestClient::post($request);
-        return $response;
+        $result = MPRestClient::post($request);
+        return $result;
     }
 
     /**
      * Cancel pending payment
-     * @param int $id
+     * @param id
      * @return array(json)
      */
     public function cancel_payment($id) {
@@ -148,13 +153,13 @@ class Mercadopago {
             )
         );
 
-        $response = MPRestClient::put($request);
-        return $response;
+        $result = MPRestClient::put($request);
+        return $result;
     }
 
     /**
      * Cancel preapproval payment
-     * @param int $id
+     * @param id
      * @return array(json)
      */
     public function cancel_preapproval_payment($id) {
@@ -168,37 +173,40 @@ class Mercadopago {
             )
         );
 
-        $response = MPRestClient::put($request);
-        return $response;
+        $result = MPRestClient::put($request);
+        return $result;
     }
 
     /**
      * Search payments according to filters, with pagination
-     * @param array $filters
-     * @param int $offset
-     * @param int $limit
+     * @param filters (array):
+     *      q: (string) text you want to search
+     *      external_reference: (string) reference you use to identify the payment
+     *      operation_type: (string) the operation_type of the payment could be regular_payment, money_transfer, recurring_payment
+     *      payment_type: (string) the payment_type of the payment could be credit_card, ticket, bank_transfer, atm
+     *      collector: (integer) collector id
+     *      range: (string) date range of time: date_created, last_modified
+     *      begin_date: (string) begin date to filter the search
+     *      end_date: (string) end date to filter the search (begin_date <= end_date)
+     * @param offset: (integer) pagination offset
+     * @param limit: (integer) pagination limit
      * @return array(json)
      */
     public function search_payment($filters, $offset = 0, $limit = 0) {
-        $filters["offset"] = $offset;
-        $filters["limit"] = $limit;
-
-        $uri_prefix = $this->sandbox ? "/sandbox" : "";
+        $filters['access_token'] = $this->get_access_token();
 
         $request = array(
             "uri" => "/v1/payments/search",
-            "params" => array_merge ($filters, array(
-                "access_token" => $this->get_access_token()
-            ))
+            "params" => $filters
         );
 
-        $collection_result = MPRestClient::get($request);
-        return $collection_result;
+        $result = MPRestClient::get($request);
+        return $result;
     }
 
     /**
      * Create a checkout preference
-     * @param array $preference
+     * @param preference (array):
      * @return array(json)
      */
     public function create_preference($preference) {
@@ -210,14 +218,14 @@ class Mercadopago {
             "data" => $preference
         );
 
-        $preference_result = MPRestClient::post($request);
-        return $preference_result;
+        $result = MPRestClient::post($request);
+        return $result;
     }
 
     /**
      * Update a checkout preference
-     * @param string $id
-     * @param array $preference
+     * @param id (string):
+     * @param preference (array):
      * @return array(json)
      */
     public function update_preference($id, $preference) {
@@ -229,13 +237,13 @@ class Mercadopago {
             "data" => $preference
         );
 
-        $preference_result = MPRestClient::put($request);
-        return $preference_result;
+        $result = MPRestClient::put($request);
+        return $result;
     }
 
     /**
      * Get a checkout preference
-     * @param string $id
+     * @param id (string):
      * @return array(json)
      */
     public function get_preference($id) {
@@ -246,13 +254,13 @@ class Mercadopago {
             )
         );
 
-        $preference_result = MPRestClient::get($request);
-        return $preference_result;
+        $result = MPRestClient::get($request);
+        return $result;
     }
 
     /**
      * Create a preapproval payment
-     * @param array $preapproval_payment
+     * @param preapproval_payment (array):
      * @return array(json)
      */
     public function create_preapproval_payment($preapproval_payment) {
@@ -264,13 +272,13 @@ class Mercadopago {
             "data" => $preapproval_payment
         );
 
-        $preapproval_payment_result = MPRestClient::post($request);
-        return $preapproval_payment_result;
+        $result = MPRestClient::post($request);
+        return $result;
     }
 
     /**
      * Get a preapproval payment
-     * @param string $id
+     * @param id (string):
      * @return array(json)
      */
     public function get_preapproval_payment($id) {
@@ -281,16 +289,16 @@ class Mercadopago {
             )
         );
 
-        $preapproval_payment_result = MPRestClient::get($request);
-        return $preapproval_payment_result;
+        $result = MPRestClient::get($request);
+        return $result;
     }
 
     /**
      * Update a preapproval payment
-     * @param string $preapproval_payment, $id
+     * @param id (string):
+     * @param preapproval_payment (array):
      * @return array(json)
      */
-
     public function update_preapproval_payment($id, $preapproval_payment) {
         $request = array(
             "uri" => "/preapproval/{$id}",
@@ -300,32 +308,27 @@ class Mercadopago {
             "data" => $preapproval_payment
         );
 
-        $preapproval_payment_result = MPRestClient::put($request);
-        return $preapproval_payment_result;
+        $result = MPRestClient::put($request);
+        return $result;
     }
-
-    /* Generic resource call methods */
 
     /**
      * Generic resource get
      * @param request
-     * @param params (deprecated)
-     * @param authenticate = true (deprecated)
+     * @param params (array):
+     * @param authenticate = true (boolean)
+     * @return array(json)
      */
     public function get($request, $params = null, $authenticate = true) {
-        if (is_string ($request)) {
-            $request = array(
-                "uri" => $request,
-                "params" => $params,
-                "authenticate" => $authenticate
-            );
+        if ($authenticate) {
+            $params = is_array($params) ? $params : array();
+            $params['access_token'] = $this->get_access_token();
         }
 
-        $request["params"] = isset ($request["params"]) && is_array ($request["params"]) ? $request["params"] : array();
-
-        if (!isset ($request["authenticate"]) || $request["authenticate"] !== false) {
-            $request["params"]["access_token"] = $this->get_access_token();
-        }
+        $request = array(
+            "uri" => $request,
+            "params" => $params
+        );
 
         $result = MPRestClient::get($request);
         return $result;
@@ -334,23 +337,19 @@ class Mercadopago {
     /**
      * Generic resource post
      * @param request
-     * @param data (deprecated)
-     * @param params (deprecated)
+     * @param data (array):
+     * @param params (array):
+     * @return array(json)
      */
-    public function post($request, $data = null, $params = null) {
-        if (is_string ($request)) {
-            $request = array(
-                "uri" => $request,
-                "data" => $data,
-                "params" => $params
-            );
-        }
+    public function post($request, $data, $params = null) {
+        $params = is_array($params) ? $params : array();
+        $params['access_token'] = $this->get_access_token();
 
-        $request["params"] = isset ($request["params"]) && is_array ($request["params"]) ? $request["params"] : array();
-
-        if (!isset ($request["authenticate"]) || $request["authenticate"] !== false) {
-            $request["params"]["access_token"] = $this->get_access_token();
-        }
+        $request = array(
+            "uri" => $request,
+            "params" => $params,
+            "data" => $data
+        );
 
         $result = MPRestClient::post($request);
         return $result;
@@ -359,23 +358,19 @@ class Mercadopago {
     /**
      * Generic resource put
      * @param request
-     * @param data (deprecated)
-     * @param params (deprecated)
+     * @param data (array):
+     * @param params (array):
+     * @return array(json)
      */
-    public function put($request, $data = null, $params = null) {
-        if (is_string ($request)) {
-            $request = array(
-                "uri" => $request,
-                "data" => $data,
-                "params" => $params
-            );
-        }
+    public function put($request, $data, $params = null) {
+        $params = is_array($params) ? $params : array();
+        $params['access_token'] = $this->get_access_token();
 
-        $request["params"] = isset ($request["params"]) && is_array ($request["params"]) ? $request["params"] : array();
-
-        if (!isset ($request["authenticate"]) || $request["authenticate"] !== false) {
-            $request["params"]["access_token"] = $this->get_access_token();
-        }
+        $request = array(
+            "uri" => $request,
+            "params" => $params,
+            "data" => $data
+        );
 
         $result = MPRestClient::put($request);
         return $result;
@@ -384,27 +379,19 @@ class Mercadopago {
     /**
      * Generic resource delete
      * @param request
-     * @param data (deprecated)
-     * @param params (deprecated)
+     * @param params (array):
+     * @return array(json)
      */
     public function delete($request, $params = null) {
-        if (is_string ($request)) {
-            $request = array(
-                "uri" => $request,
-                "params" => $params
-            );
-        }
+        $params = is_array($params) ? $params : array();
+        $params['access_token'] = $this->get_access_token();
 
-        $request["params"] = isset ($request["params"]) && is_array ($request["params"]) ? $request["params"] : array();
-
-        if (!isset ($request["authenticate"]) || $request["authenticate"] !== false) {
-            $request["params"]["access_token"] = $this->get_access_token();
-        }
+        $request = array(
+            "uri" => $request,
+            "params" => $params
+        );
 
         $result = MPRestClient::delete($request);
         return $result;
     }
-
-    /* **************************************************************************************** */
-
 }

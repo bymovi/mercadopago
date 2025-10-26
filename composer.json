@@ -3,7 +3,7 @@
     "description": "Paquete para integrar mercado pago a laravel 4.2",
     "license":"MIT",
     "minimum-stability": "stable",
-    "version": "1.0.14",
+    "version": "1.0.15",
     "authors": [
         {
             "name": "Jose Rodrigo Diaz",
@@ -15,11 +15,8 @@
         "illuminate/support": "~4.2"
     },
     "autoload": {
-        "classmap": [
-            "src/migrations"
-        ],
-        "psr-0": {
-            "Bymovi\\Mercadopago\\": "src/"
+        "psr-4": {
+            "Bymovi\\\\Mercadopago\\\\": "src/"
         }
     }
 }

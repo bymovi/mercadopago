@@ -45,7 +45,8 @@ class MercadopagoServiceProvider extends ServiceProvider
         }
         else
         {
-            $loader->addNamespace('mercadopago', __DIR__ . '/../../config');
+            // Adjusted for PSR-4: config directory is now directly under src/
+            $loader->addNamespace('mercadopago', __DIR__ . '/config');
         }
 
         $config = $loader->load($env, 'mercadopago', 'mercadopago');
