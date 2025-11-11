@@ -14,7 +14,7 @@ class Mercadopago extends Facade
      * @param $subdominio
      * @return \Bymovi\Mercadopago\Mercadopago
      */
-    public static function init($subdominio)
+    public static function init($subdominio = '')
     {
         return static::$app->make('mercadopago', $subdominio);
     }

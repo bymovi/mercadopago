@@ -31,7 +31,7 @@ class Mercadopago {
         $i = func_num_args();
 
         if ($i > 2 || $i < 1) {
-            throw new MercadoPagoException("Invalid arguments. Use CLIENT_ID and CLIENT SECRET, or ACCESS_TOKEN");
+            throw new MercadopagoException("Invalid arguments. Use CLIENT_ID and CLIENT SECRET, or ACCESS_TOKEN");
         }
 
         if ($i == 1) {
@@ -75,7 +75,7 @@ class Mercadopago {
         ));
 
         if ($access_data["status"] != 200) {
-            throw new MercadoPagoException ($access_data['response']['message'], $access_data['status']);
+            throw new MercadopagoException ($access_data['response']['message'], $access_data['status']);
         }
 
         $this->access_data = $access_data['response'];

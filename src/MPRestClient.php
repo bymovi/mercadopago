@@ -14,15 +14,15 @@ class MPRestClient {
 
     private static function build_request($request) {
         if (!extension_loaded ("curl")) {
-            throw new MercadoPagoException("cURL extension not found. You need to enable cURL in your php.ini or another configuration you have.");
+            throw new MercadopagoException("cURL extension not found. You need to enable cURL in your php.ini or another configuration you have.");
         }
 
         if (!isset($request["method"])) {
-            throw new MercadoPagoException("No HTTP METHOD specified");
+            throw new MercadopagoException("No HTTP METHOD specified");
         }
 
         if (!isset($request["uri"])) {
-            throw new MercadoPagoException("No URI specified");
+            throw new MercadopagoException("No URI specified");
         }
 
         // Set headers
@@ -80,7 +80,7 @@ class MPRestClient {
                 if(function_exists('json_last_error')) {
                     $json_error = json_last_error();
                     if ($json_error != JSON_ERROR_NONE) {
-                        throw new MercadoPagoException("JSON Error [{$json_error}] - Data: ".$request["data"]);
+                        throw new MercadopagoException("JSON Error [{$json_error}] - Data: ".$request["data"]);
                     }
                 }
             } else if ($form_content) {
@@ -102,7 +102,7 @@ class MPRestClient {
         $api_http_code = curl_getinfo($connect, CURLINFO_HTTP_CODE);
 
         if ($api_result === FALSE) {
-            throw new MercadoPagoException (curl_error ($connect));
+            throw new MercadopagoException (curl_error ($connect));
         }
 
         $response = array(
@@ -128,7 +128,7 @@ class MPRestClient {
                 }
             }
 
-            throw new MercadoPagoException ($message, $response['status']);
+            throw new MercadopagoException ($message, $response['status']);
         }
 
         curl_close($connect);

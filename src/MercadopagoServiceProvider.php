@@ -5,8 +5,6 @@ namespace Bymovi\Mercadopago;
 use Config;
 use Empresa;
 use Illuminate\Support\ServiceProvider;
-use Log;
-use Session;
 
 class MercadopagoServiceProvider extends ServiceProvider
 {
@@ -57,7 +55,7 @@ class MercadopagoServiceProvider extends ServiceProvider
         $this->app->bind('mercadopago', function($app, $subdominio) {
             if (!is_string($subdominio))
             {
-                throw new MercadopagoException('Subdominio debe ser string');
+                return null;
             }
 
             $client_id     = Config::get("mercadopago::mercadopago.$subdominio.client_id");
